@@ -1,0 +1,2876 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>apmaihub</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/dwQhC04k/image.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #ff007f;
+            --accent-glow: rgba(255, 0, 127, 0.4);
+            --primary-glow: rgba(0, 242, 254, 0.35);
+            
+            /* Dark Theme */
+            --bg-main: #070913;
+            --bg-card: rgba(15, 23, 42, 0.65);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            --bg-nav: rgba(7, 9, 19, 0.78);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 242, 254, 0.3);
+            --cart-bg: #0f172a;
+            --chat-user-bg: linear-gradient(135deg, #4facfe, #00f2fe);
+            --chat-ai-bg: rgba(30, 41, 59, 0.8);
+            --logo-watermark-opacity: 0.12;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.78);
+            --bg-card-hover: rgba(255, 255, 255, 0.95);
+            --bg-nav: rgba(241, 245, 249, 0.85);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --border-glow: rgba(79, 172, 254, 0.4);
+            --cart-bg: #ffffff;
+            --chat-user-bg: linear-gradient(135deg, #00f2fe, #4facfe);
+            --chat-ai-bg: rgba(226, 232, 240, 0.9);
+            --logo-watermark-opacity: 0.06;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .watermark-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50vw;
+            max-width: 500px;
+            height: auto;
+            z-index: -1;
+            opacity: var(--logo-watermark-opacity);
+            pointer-events: none;
+            filter: drop-shadow(0 0 40px var(--primary));
+            animation: pulseWatermark 8s infinite alternate ease-in-out;
+            border-radius: 50%;
+        }
+
+        @keyframes pulseWatermark {
+            0% { transform: translate(-50%, -50%) scale(0.95) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) scale(1.05) rotate(3deg); }
+        }
+
+        navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            background: var(--bg-nav);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-img {
+            width: 46px;
+            height: 46px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 0 20px var(--primary-glow);
+            border: 1px solid var(--border-glow);
+            animation: floatLogo 4s infinite ease-in-out;
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 26px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.92rem;
+            position: relative;
+            padding: 6px 0;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-size: 1.05rem;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .cart-badge.bounce {
+            animation: badgeBounce 0.4s ease;
+        }
+
+        @keyframes badgeBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: #070913;
+            font-weight: 800;
+            padding: 12px 22px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 20px var(--primary-glow);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--primary-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-upgrade-hero {
+            background: linear-gradient(135deg, var(--accent), #ff6a00);
+            color: #ffffff;
+            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 25px var(--accent-glow);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            animation: pulseUpgrade 2.5s infinite alternate;
+        }
+
+        @keyframes pulseUpgrade {
+            0% { transform: scale(1); box-shadow: 0 0 15px var(--accent-glow); }
+            100% { transform: scale(1.03); box-shadow: 0 0 30px var(--accent-glow); }
+        }
+
+        main {
+            padding-top: 90px;
+        }
+
+        .hero-section {
+            padding: 60px 5% 50px;
+            text-align: center;
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+        .hero-box {
+            padding: 48px 32px;
+            border-radius: 28px;
+            border: 1px solid var(--border-glow);
+            background: radial-gradient(circle at top, rgba(0, 242, 254, 0.1), var(--bg-card));
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        }
+
+        .pill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid var(--border-glow);
+            border-radius: 30px;
+            color: var(--primary);
+            font-size: 0.84rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px var(--primary-glow); }
+            100% { box-shadow: 0 0 20px var(--primary-glow); }
+        }
+
+        .hero-title {
+            font-size: clamp(2.2rem, 4.8vw, 4rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 18px;
+            letter-spacing: -1.2px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.12rem;
+            color: var(--text-muted);
+            max-width: 780px;
+            margin: 0 auto 28px;
+            line-height: 1.65;
+        }
+
+        .hero-upgrade-strip {
+            margin-top: 28px;
+            padding: 14px 20px;
+            border-radius: 16px;
+            background: rgba(255, 0, 127, 0.08);
+            border: 1px solid rgba(255, 0, 127, 0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 26px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            border-color: var(--border-glow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 20px;
+            max-width: 1140px;
+            margin: 30px auto 80px;
+            padding: 0 5%;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 22px;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .section-container {
+            max-width: 1220px;
+            margin: 0 auto 95px;
+            padding: 0 5%;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            height: 560px;
+        }
+
+        @media (max-width: 868px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        .preset-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .preset-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 13px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0;
+        }
+
+        .chat-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 82%;
+            animation: messageFade 0.3s ease;
+        }
+
+        @keyframes messageFade {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            margin-left: auto;
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .user .avatar {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .ai .avatar {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .msg-bubble {
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 0.92rem;
+            line-height: 1.55;
+        }
+
+        .user .msg-bubble {
+            background: var(--chat-user-bg);
+            color: #070913;
+            font-weight: 700;
+            border-top-right-radius: 4px;
+        }
+
+        .ai .msg-bubble {
+            background: var(--chat-ai-bg);
+            border: 1px solid var(--border-color);
+            border-top-left-radius: 4px;
+        }
+
+        .chat-input-area {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 18px;
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tool-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15);
+        }
+
+        .tool-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .tool-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(255, 0, 127, 0.15));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.45rem;
+            color: var(--primary);
+        }
+
+        .tool-num-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(0, 242, 254, 0.08);
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .tool-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .tool-desc {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.55;
+            margin-bottom: 20px;
+        }
+
+        .tool-footer {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-add-cart {
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-cart:hover {
+            background: #25D366;
+            color: #fff;
+            border-color: #25D366;
+        }
+
+        .apm-studio-shell {
+            display: grid;
+            grid-template-columns: 265px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+        @media (max-width: 980px) {
+            .apm-studio-shell {
+                grid-template-columns: 1fr;
+            }
+        }
+        .apm-sidebar {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 18px;
+        }
+        .apm-brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .apm-logo-circle {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 18px var(--primary-glow);
+            overflow: hidden;
+            cursor: pointer;
+            flex-shrink: 0;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .apm-logo-circle img, .apm-logo-circle svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .apm-logo-hover {
+            position: absolute;
+            inset: 0;
+            background: rgba(7, 9, 19, 0.8);
+            color: var(--primary);
+            font-size: 0.62rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .apm-logo-circle:hover .apm-logo-hover {
+            opacity: 1;
+        }
+        .apm-nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .apm-nav-btn {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.84rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+        .apm-nav-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateX(3px);
+        }
+        .apm-nav-btn.active-nav {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: #070913 !important;
+            font-weight: 800;
+            border-color: transparent;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+        .apm-support-box {
+            background: rgba(0, 242, 254, 0.05);
+            border: 1px solid var(--border-glow);
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 0.76rem;
+            line-height: 1.6;
+        }
+        .apm-header-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 22px;
+            margin-bottom: 20px;
+        }
+        .apm-studio-grid {
+            display: grid;
+            grid-template-columns: 5fr 7fr;
+            gap: 20px;
+            align-items: start;
+        }
+        @media (max-width: 920px) {
+            .apm-studio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .apm-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .apm-label {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+        .apm-input, .apm-select, .apm-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 9px 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.84rem;
+            outline: none;
+        }
+        [data-theme="light"] .apm-input,
+        [data-theme="light"] .apm-select,
+        [data-theme="light"] .apm-textarea {
+            background: rgba(255, 255, 255, 0.88);
+        }
+        .apm-select option {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        .apm-input:focus, .apm-select:focus, .apm-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+        .apm-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .apm-three-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .apm-subbox {
+            background: rgba(0, 242, 254, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+        .apm-btn-secondary {
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 9px 13px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            text-align: center;
+        }
+        .apm-btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .apm-btn-accent {
+            background: linear-gradient(135deg, var(--accent), #ff6a00);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .apm-btn-accent:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+        .apm-monitor-box {
+            position: relative;
+            background: #03050a;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--border-glow);
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            height: 360px;
+            width: 100%;
+        }
+        .apm-monitor-box canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .apm-hidden {
+            display: none !important;
+        }
+        .apm-code-pre {
+            background: #04060e;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--primary);
+            max-height: 380px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .apm-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            background: rgba(0, 242, 254, 0.12);
+            color: var(--primary);
+            border: 1px solid var(--border-glow);
+        }
+        .filter-pill-bar {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .filter-pill {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .filter-pill.active, .filter-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(0, 242, 254, 0.12);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 900px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .contact-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid var(--border-glow);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .contact-link {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .contact-link:hover {
+            color: var(--primary);
+        }
+
+        .map-container {
+            width: 100%;
+            height: 100%;
+            min-height: 390px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background: var(--cart-bg);
+            border-left: 1px solid var(--border-color);
+            z-index: 2000;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-drawer.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card-hover);
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .cart-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .whatsapp-config-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .whatsapp-input {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .auth-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            background: var(--cart-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            z-index: 2500;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .auth-modal.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .auth-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.2);
+            padding: 4px;
+            border-radius: 10px;
+        }
+        .auth-tab {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .auth-tab.active {
+            background: var(--bg-card);
+            color: var(--primary);
+        }
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .auth-msg {
+            font-size: 0.85rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .auth-msg.err { color: var(--accent); }
+        .auth-msg.succ { color: #10b981; }
+
+        footer {
+            text-align: center;
+            padding: 40px 5%;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 820px) {
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <img src="https://i.ibb.co/dwQhC04k/image.png" alt="Watermark Logo" class="watermark-bg" onerror="this.src='1000074244.jpg'">
+
+    <navbar>
+        <a href="#hero" class="brand-logo">
+            <img src="https://i.ibb.co/dwQhC04k/image.png" alt="APM Logo" class="logo-img" id="navbar-logo-img" onerror="this.src='1000074244.jpg'">
+            <div>
+                <span>Akafo <span class="gradient-text">Pulaatifoomu</span></span>
+                <div style="font-size: 0.65rem; color: var(--primary); font-weight: 700; letter-spacing: 0.5px;">CEO STEVEN KAYITA</div>
+            </div>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#hero" class="active">Home</a></li>
+            <li><a href="#studio">AI Video Studio</a></li>
+            <li><a href="#playground">AI Sandbox</a></li>
+            <li><a href="#tools">Studio Services</a></li>
+            <li><a href="#about">About &amp; Contacts</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <button class="icon-btn" title="Unlock Pro Plans" onclick="jumpToUpgrade()">
+                <i class="fa-solid fa-crown" style="color: var(--accent);"></i>
+            </button>
+            <button class="icon-btn" id="whatsapp-settings-btn" title="Configure WhatsApp Number" onclick="toggleWhatsAppConfig()">
+                <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+            </button>
+            <button class="icon-btn" id="theme-toggle" title="Toggle Light/Dark Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <button class="icon-btn" id="cart-toggle" title="View Selected Services">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-badge" id="cart-count">0</span>
+            </button>
+            <button class="btn-primary" id="auth-nav-btn" onclick="openAuthModal('login')" style="padding: 10px 18px; font-size: 0.85rem;">
+                <i class="fa-solid fa-user"></i> <span id="auth-nav-text">Login</span>
+            </button>
+        </div>
+    </navbar>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="hero-box">
+                <div class="pill-tag">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>AKAFO PULAATIFOOMU MASSMEDIA • ENGINE 3.0</span>
+                </div>
+                <h1 class="hero-title">
+                    Akafo Pulaatifoomu Massmedia <br>
+                    <span class="gradient-text">AI Video Studio &amp; AI Hub</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Led by <strong>CEO Steven Kayita Gari</strong>. Create instant multi-language AI broadcasts in <strong>12+ languages</strong> with real human presenters, camera filters, and studio backgrounds—or explore our pure AI studio services.
+                </p>
+
+                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                    <button type="button" onclick="startFreeDemoVideo()" class="btn-primary" style="font-size: 0.95rem; padding: 14px 28px;">
+                        <i class="fa-solid fa-play"></i> Try Free 30s Video Now
+                    </button>
+                    <button type="button" onclick="jumpToUpgrade()" class="btn-upgrade-hero" style="font-size: 0.95rem;">
+                        <i class="fa-solid fa-crown"></i> Upgrade to Pro ($9.99 / $24.99)
+                    </button>
+                    <a href="#tools" class="btn-primary" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);">
+                        <i class="fa-solid fa-layer-group" style="color: var(--primary);"></i> Explore Studio Services
+                    </a>
+                </div>
+
+                <div class="hero-upgrade-strip">
+                    <span class="apm-badge">FREE TIER ACTIVE: 30s Videos</span>
+                    <span>Want Extended Commercial Renders?</span>
+                    <span style="color: var(--primary); font-weight: 700;">🇺🇬 Airtel: +256 750 438877 (KAYITA Gari)</span>
+                    <span style="color: #10b981; font-weight: 700;">🇰🇪 M-Pesa: +254 182477559 (Debralyn Kawira)</span>
+                    <button type="button" onclick="jumpToUpgrade()" style="background: var(--accent); color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.78rem;">
+                        Unlock Instant Access &rarr;
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div class="stats-grid">
+            <div class="glass-card stat-card">
+                <div class="stat-number" data-target="12">0</div>
+                <div class="stat-label">Supported Global &amp; Local Languages</div>
+            </div>
+            <div class="glass-card stat-card">
+                <div class="stat-number" data-target="4">0</div>
+                <div class="stat-label">AI Studio Services</div>
+            </div>
+            <div class="glass-card stat-card">
+                <div class="stat-number" data-target="150000">0</div>
+                <div class="stat-label">Creators &amp; Media Reach</div>
+            </div>
+            <div class="glass-card stat-card">
+                <div class="stat-number" data-target="5">0</div>
+                <div class="stat-label">Max Commercial Length (Minutes)</div>
+            </div>
+        </div>
+
+        <section id="studio" class="section-container">
+            <div class="section-header">
+                <div class="pill-tag">
+                    <i class="fa-solid fa-clapperboard"></i>
+                    <span>Interactive Live Broadcast &amp; Rendering Engine • Free 30s Trial Ready</span>
+                </div>
+                <h2 class="section-title">APM Mass Media <span class="gradient-text">AI Video Studio</span></h2>
+                <p style="color: var(--text-muted)">Select a topic, pick a language, customize your background &amp; visual filters, and generate a complete video in one click.</p>
+            </div>
+
+            <div class="glass-card apm-header-bar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-circle-dot" style="color: #10b981; font-size: 1rem;"></i>
+                    <span style="font-weight: 800; font-size: 0.92rem;">APM Production Engine (12+ Languages + Visual Filters + Custom Studio Backgrounds)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" onclick="startFreeDemoVideo()" class="apm-btn-secondary" style="border-color: var(--primary); color: var(--primary);">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> 1-Click Free Demo Video
+                    </button>
+                    <span id="account-tier-header" class="apm-badge">Free Tier: 30s Max</span>
+                    <button type="button" onclick="switchTab('wallet')" class="apm-btn-accent">
+                        <i class="fa-solid fa-crown"></i> Upgrade to Pro
+                    </button>
+                </div>
+            </div>
+
+            <div class="apm-studio-shell">
+                <aside class="glass-card apm-sidebar">
+                    <div>
+                        <div class="apm-brand-box">
+                            <label for="logo-upload" class="apm-logo-circle" title="Click to upload your custom watermark logo">
+                                <img id="app-logo-img" src="https://i.ibb.co/dwQhC04k/image.png" onerror="this.style.display='none'; document.getElementById('fallback-svg-logo').style.display='block';" />
+                                <svg id="fallback-svg-logo" viewBox="0 0 100 100" style="display:none;">
+                                    <circle cx="50" cy="50" r="48" fill="white" stroke="#00f2fe" stroke-width="5"/>
+                                    <path d="M 15 45 Q 35 28 76 35 Q 40 42 20 68 Z" fill="#ff007f"/>
+                                    <text x="53" y="61" font-family="Arial Black" font-weight="900" font-size="25" fill="#070913" text-anchor="middle">APM</text>
+                                </svg>
+                                <div class="apm-logo-hover">Change Logo</div>
+                            </label>
+                            <input type="file" id="logo-upload" accept="image/*" class="apm-hidden" onchange="loadUserLogo(event)" />
+                            <div>
+                                <div style="font-weight: 800; font-size: 0.92rem;">APM MASS MEDIA</div>
+                                <div style="font-size: 0.72rem; color: var(--primary); font-weight: 700;">CEO STEVEN GARI</div>
+                                <span id="plan-badge-side" class="apm-badge" style="margin-top: 4px;">FREE TIER (30s Max)</span>
+                            </div>
+                        </div>
+
+                        <nav class="apm-nav-list" style="margin-top: 16px;">
+                            <button type="button" onclick="switchTab('studio')" id="nav-studio" class="apm-nav-btn active-nav">
+                                <i class="fa-solid fa-clapperboard"></i><span>1. Video Creation Studio</span>
+                            </button>
+                            <button type="button" onclick="switchTab('assets')" id="nav-assets" class="apm-nav-btn">
+                                <i class="fa-solid fa-layer-group"></i><span>2. Storyboard &amp; 7 AI Assets</span>
+                            </button>
+                            <button type="button" onclick="switchTab('pipeline')" id="nav-pipeline" class="apm-nav-btn">
+                                <i class="fa-solid fa-server"></i><span>3. FastAPI / FFmpeg Queue</span>
+                            </button>
+                            <button type="button" onclick="switchTab('backend')" id="nav-backend" class="apm-nav-btn">
+                                <i class="fa-solid fa-code"></i><span>4. Full Backend Server Code</span>
+                            </button>
+                            <button type="button" onclick="switchTab('wallet')" id="nav-wallet" class="apm-nav-btn">
+                                <i class="fa-solid fa-credit-card"></i><span>5. Subscriptions &amp; Billing</span>
+                            </button>
+                        </nav>
+                    </div>
+
+                    <div class="apm-support-box">
+                        <div style="font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 4px;">Official Billing &amp; Support</div>
+                        <div style="color: var(--text-muted);">📧 stevengari640@gmail.com</div>
+                        <div style="color: var(--text-muted);">📧 apmmassmedia@gmail.com</div>
+                        <div style="color: var(--text-main); font-weight: 700; margin-top: 4px;">🇺🇬 +256 750 438877 (KAYITA Gari)</div>
+                        <div style="color: var(--text-main); font-weight: 700;">🇰🇪 +254 182477559 (Debralyn K.)</div>
+                        <button type="button" onclick="switchTab('wallet')" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px; padding: 10px; font-size: 0.78rem;">
+                            🔓 Unlock Pro Videos
+                        </button>
+                    </div>
+                </aside>
+
+                <div>
+                    <div id="tab-studio" class="apm-studio-grid">
+                        <div class="glass-card apm-field-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                                <span style="font-weight: 800; font-size: 0.8rem; color: var(--primary); text-transform: uppercase;">A. Script, Language &amp; Visual Studio Setup</span>
+                                <span style="font-size: 0.7rem; color: var(--accent); font-weight: 800;">FREE &amp; PRO READY</span>
+                            </div>
+
+                            <div>
+                                <label class="apm-label">Enter Any Topic, News Story, Campaign, or Product:</label>
+                                <textarea id="topic-input" rows="2" class="apm-textarea">AI video automation and digital media studio production in East Africa</textarea>
+                            </div>
+
+                            <div class="apm-subbox">
+                                <div class="apm-two-col">
+                                    <div>
+                                        <label class="apm-label" style="color: var(--primary);">🌍 Select Language (12+):</label>
+                                        <select id="language-select" onchange="filterVoicesByLanguage()" class="apm-select">
+                                            <option value="en">🇬🇧🇺🇸🇺🇬 English (Global / East Africa)</option>
+                                            <option value="sw">🇰🇪🇹ℤ🇺🇬 Swahili (Kiswahili)</option>
+                                            <option value="lg">🇺🇬 Luganda (Uganda)</option>
+                                            <option value="nyn">🇺🇬 Runyankole / Rukiga (Uganda)</option>
+                                            <option value="ach">🇺🇬🇰🇪 Acholi / Luo (Uganda &amp; Kenya)</option>
+                                            <option value="rw">🇷🇼🇺🇬 Kinyarwanda (Rwanda / Uganda)</option>
+                                            <option value="ln">🇨🇩 Lingala (DR Congo / East Africa)</option>
+                                            <option value="fr">🇫🇷🇨🇩 French (Français)</option>
+                                            <option value="ar">🇦🇪🇪🇬 Arabic (العربية)</option>
+                                            <option value="es">🇪🇸🇲🇽 Spanish (Español)</option>
+                                            <option value="zh">🇨🇳 Chinese (中文)</option>
+                                            <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+                                            <option value="all">🌐 All Installed System Voices</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="apm-label" style="color: var(--accent);">⏱️ Video Duration:</label>
+                                        <select id="duration-input" onchange="checkDurationPermission()" class="apm-select">
+                                            <option value="30">30 Seconds (FREE TIER)</option>
+                                            <option value="60">60 Seconds / 1 Minute (PRO 🔒)</option>
+                                            <option value="120">2 Minutes (PRO 🔒)</option>
+                                            <option value="180">3 Minutes (PRO 🔒)</option>
+                                            <option value="300">5 Minutes (VIP 🔒)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="apm-label">🎙️ Neural Human TTS Voice Engine:</label>
+                                    <select id="voice-select" class="apm-select"></select>
+                                </div>
+
+                                <label class="apm-btn-secondary" style="cursor: pointer;">
+                                    <i class="fa-solid fa-microphone"></i>
+                                    <span>Or Upload Recorded Human Voiceover (MP3/WAV)</span>
+                                    <input type="file" accept="audio/*" onchange="loadCustomVoiceAudio(event)" class="apm-hidden" />
+                                </label>
+                                <audio id="custom-voice-el" class="apm-hidden"></audio>
+                            </div>
+
+                            <div class="apm-subbox">
+                                <div class="apm-two-col">
+                                    <div>
+                                        <label class="apm-label" style="color: var(--primary);">🎨 Studio Background Theme:</label>
+                                        <select id="bg-theme-select" class="apm-select">
+                                            <option value="cyber">Cyber Matrix Neon (Default)</option>
+                                            <option value="news">Breaking News Red Studio</option>
+                                            <option value="corporate">Executive Royal Blue</option>
+                                            <option value="gold">Warm Gold Luxury</option>
+                                            <option value="emerald">Emerald Tech Studio</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="apm-label" style="color: var(--accent);">✨ Camera / Video Filter:</label>
+                                        <select id="video-filter-select" onchange="applyVideoFilterPreset(this.value)" class="apm-select">
+                                            <option value="none">Normal HD (No Filter)</option>
+                                            <option value="contrast(1.25) saturate(1.2)">Cinema Contrast</option>
+                                            <option value="sepia(0.35) saturate(1.5) brightness(1.05)">Warm Golden Hour</option>
+                                            <option value="hue-rotate(15deg) contrast(1.2) saturate(1.6)">Cyber Neon Glow</option>
+                                            <option value="grayscale(1) contrast(1.3)">B&amp;W News Documentary</option>
+                                            <option value="saturate(1.8) contrast(1.1)">Crisp Vivid Broadcast</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="apm-two-col">
+                                    <label class="apm-btn-secondary" style="cursor: pointer;">
+                                        <i class="fa-solid fa-image"></i>
+                                        <span>Custom BG Image</span>
+                                        <input type="file" accept="image/*" onchange="loadCustomBgImage(event)" class="apm-hidden" />
+                                    </label>
+                                    <button type="button" onclick="toggleTicker()" class="apm-btn-secondary">
+                                        <i class="fa-solid fa-scroll"></i>
+                                        <span id="ticker-btn-label">News Ticker: ON</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="apm-two-col">
+                                <div>
+                                    <label class="apm-label">Content Style:</label>
+                                    <select id="style-input" class="apm-select">
+                                        <option value="Educational">Educational</option>
+                                        <option value="Promotional">Promotional</option>
+                                        <option value="News">News Broadcast</option>
+                                        <option value="Entertainment">Entertainment</option>
+                                        <option value="Storytelling">Storytelling</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="apm-label">Platform Render Profile:</label>
+                                    <select id="platform-input" onchange="changeAspectRatio()" class="apm-select">
+                                        <option value="Facebook">YouTube / Facebook (16:9 HD)</option>
+                                        <option value="TikTok">TikTok (9:16 Vertical)</option>
+                                        <option value="YouTube Shorts">YouTube Shorts (9:16)</option>
+                                        <option value="Instagram Reels">Instagram Reels (9:16)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="apm-subbox">
+                                <label class="apm-label" style="color: var(--primary);">🎥 C. Real Human Presenter Source:</label>
+                                <div class="apm-two-col">
+                                    <label class="btn-primary" style="justify-content: center; padding: 10px; font-size: 0.78rem; cursor: pointer;">
+                                        <i class="fa-solid fa-upload"></i><span>1. Load Human MP4</span>
+                                        <input type="file" accept="video/*" onchange="loadLocalHumanMP4(event)" class="apm-hidden" />
+                                    </label>
+                                    <button type="button" onclick="activateLiveCamera()" class="apm-btn-accent" style="padding: 10px; font-size: 0.78rem;">
+                                        <i class="fa-solid fa-camera"></i><span>2. Live Human Cam</span>
+                                    </button>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <input id="pexels-key" type="password" placeholder="Optional: Paste Pexels API Key for HD Stock..." class="apm-input" style="flex: 1;" />
+                                    <button type="button" onclick="fetchPexelsHumanVideo()" class="apm-btn-secondary">Fetch HD</button>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <button type="button" onclick="runFullProductionPipeline()" class="btn-primary" style="flex: 1; justify-content: center; padding: 14px;">
+                                    <i class="fa-solid fa-play"></i>
+                                    <span>GENERATE &amp; PLAY BROADCAST</span>
+                                </button>
+                                <button type="button" onclick="stopBroadcast()" class="apm-btn-secondary" style="color: var(--accent); border-color: var(--accent);">
+                                    <i class="fa-solid fa-stop"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="glass-card apm-field-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                                <span style="font-weight: 800; font-size: 0.82rem; color: var(--primary);">B. LIVE BROADCAST COMPOSITOR (FILTERS + SUBTITLES + WATERMARK)</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span id="timer-display" style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; padding: 4px 10px; border-radius: 8px; background: rgba(0,0,0,0.4); color: var(--primary); border: 1px solid var(--border-color);">00:00 / 00:30</span>
+                                    <span id="job-status-badge" class="apm-badge">STUDIO READY</span>
+                                </div>
+                            </div>
+
+                            <div class="filter-pill-bar">
+                                <button type="button" class="filter-pill active" onclick="quickFilter('none', this)">Normal</button>
+                                <button type="button" class="filter-pill" onclick="quickFilter('contrast(1.25) saturate(1.2)', this)">Cinema</button>
+                                <button type="button" class="filter-pill" onclick="quickFilter('sepia(0.35) saturate(1.5) brightness(1.05)', this)">Warm Gold</button>
+                                <button type="button" class="filter-pill" onclick="quickFilter('hue-rotate(15deg) contrast(1.2) saturate(1.6)', this)">Cyber Neon</button>
+                                <button type="button" class="filter-pill" onclick="quickFilter('grayscale(1) contrast(1.3)', this)">B&amp;W News</button>
+                                <button type="button" class="filter-pill" onclick="quickFilter('saturate(1.8) contrast(1.1)', this)">Vivid Broadcast</button>
+                            </div>
+
+                            <div class="apm-monitor-box" id="monitor-wrapper">
+                                <canvas id="compositor-canvas" width="640" height="360"></canvas>
+                                <video id="human-video-el" autoplay loop muted playsinline class="apm-hidden"></video>
+                            </div>
+
+                            <div class="apm-subbox" style="flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                                <span id="pipeline-step-text" style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">Ready — Click "GENERATE &amp; PLAY BROADCAST" or "1-Click Free Demo Video"</span>
+                                <button type="button" onclick="switchTab('assets')" style="background: none; border: none; color: var(--accent); font-weight: 800; font-size: 0.78rem; cursor: pointer; text-decoration: underline;">View All 7 AI Assets &rarr;</button>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <button type="button" onclick="switchTab('backend')" class="apm-btn-secondary">
+                                    <i class="fa-solid fa-code" style="color: var(--primary);"></i>
+                                    <span>FastAPI Backend Code</span>
+                                </button>
+                                <button type="button" id="export-mp4-btn" onclick="exportRenderedVideo()" class="apm-btn-accent">
+                                    <i class="fa-solid fa-file-video"></i>
+                                    <span>Record &amp; Download Video (.WEBM / MP4)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-assets" class="glass-card apm-field-group apm-hidden">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <h3 style="font-weight: 800; font-size: 1.05rem; color: var(--primary);">All 7 AI Content Deliverables &amp; Scene Storyboard</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">Video Scripts, Captions, Viral Titles, Hashtags, Content Ideas, Short-Form Concepts &amp; JSON Storyboard</p>
+                            </div>
+                            <button type="button" onclick="copyAllAssets()" class="btn-primary" style="padding: 10px 18px; font-size: 0.8rem;">
+                                <i class="fa-solid fa-copy"></i> Copy All 7 Assets
+                            </button>
+                        </div>
+                        <div id="full-assets-content" class="apm-two-col">
+                            <div class="apm-subbox">
+                                <h4 style="font-weight: 800; font-size: 0.82rem; color: var(--primary); text-transform: uppercase;">1. Viral Titles &amp; 2. Social Captions</h4>
+                                <div id="asset-titles" style="font-size: 0.85rem; line-height: 1.6;">Click "Generate &amp; Play Broadcast" to populate...</div>
+                            </div>
+                            <div class="apm-subbox">
+                                <h4 style="font-weight: 800; font-size: 0.82rem; color: var(--accent); text-transform: uppercase;">3. Hashtags, 4. Content Ideas &amp; 5. Short-Form Concepts</h4>
+                                <div id="asset-ideas" style="font-size: 0.85rem; line-height: 1.6;">Click "Generate &amp; Play Broadcast" to populate...</div>
+                            </div>
+                            <div class="apm-subbox" style="grid-column: 1 / -1;">
+                                <h4 style="font-weight: 800; font-size: 0.82rem; color: var(--primary); text-transform: uppercase;">6. Structured Scene Storyboard JSON &amp; 7. Multi-Language Voice-Over Script</h4>
+                                <pre id="asset-storyboard" class="apm-code-pre"></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-pipeline" class="glass-card apm-field-group apm-hidden">
+                        <h3 style="font-weight: 800; font-size: 1.05rem; color: var(--primary);">14-Step Video Generation Pipeline &amp; Celery Queue Telemetry</h3>
+                        <div id="pipeline-log-box" class="apm-code-pre" style="height: 340px;">
+                            <div>[SYSTEM] Akafo Pulaatifoomu Massmedia FastAPI v3.0 Initialized (CEO STEVEN GARI)</div>
+                            <div>[DB] PostgreSQL 16 + Redis Queue Broker Connected.</div>
+                            <div>[LANGUAGES] Loaded 12+ Multi-Language Script &amp; Neural TTS Adapters.</div>
+                            <div>[WORKERS] Celery queues active: CONTENT_GENERATION, STORYBOARD_GENERATION, VOICE_GENERATION, SUBTITLE_GENERATION, VIDEO_RENDER.</div>
+                        </div>
+                    </div>
+
+                    <div id="tab-backend" class="glass-card apm-field-group apm-hidden">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <h3 style="font-weight: 800; font-size: 1.05rem; color: var(--primary);">Complete Cloud Backend Server Code (FastAPI + PostgreSQL + Redis + Celery + Whisper + FFmpeg)</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">Ready for your VPS or cloud server deployment.</p>
+                            </div>
+                            <button type="button" onclick="downloadBackendBundle()" class="btn-primary" style="padding: 10px 18px; font-size: 0.8rem;">
+                                <i class="fa-solid fa-download"></i> Download Backend Server Code (.PY)
+                            </button>
+                        </div>
+                        <pre id="backend-code-display" class="apm-code-pre"></pre>
+                    </div>
+
+                    <div id="tab-wallet" class="apm-field-group apm-hidden">
+                        <div class="apm-three-col">
+                            <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <span class="apm-badge">FREE STARTER</span>
+                                    <h4 style="font-weight: 800; font-size: 1.1rem; margin-top: 10px;">30-Second Drafts</h4>
+                                    <p style="font-size: 1.8rem; font-weight: 900; margin-top: 6px; color: var(--primary);">FREE</p>
+                                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 8px;">Create unlimited 30-second videos in all 12+ languages with APM watermark &amp; visual filters.</p>
+                                </div>
+                                <button type="button" onclick="startFreeDemoVideo()" class="apm-btn-secondary" style="margin-top: 16px; width: 100%;">Try Free 30s Video</button>
+                            </div>
+
+                            <div class="glass-card" style="border: 2px solid var(--primary); display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <span class="apm-badge">PRO CREATOR</span>
+                                    <h4 style="font-weight: 800; font-size: 1.1rem; margin-top: 10px;">1 Min to 3 Min Videos</h4>
+                                    <p style="font-size: 1.8rem; font-weight: 900; margin-top: 6px; color: var(--primary);">$9.99 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted);">/ mo (UGX 37,000 / KES 1,300)</span></p>
+                                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 8px;">Unlocks 1-Minute, 2-Minute &amp; 3-Minute 1080p HD renders + custom logo upload.</p>
+                                </div>
+                                <button type="button" onclick="document.getElementById('payer-phone').focus()" class="btn-primary" style="margin-top: 16px; width: 100%; justify-content: center;">Select Pro Plan</button>
+                            </div>
+
+                            <div class="glass-card" style="border: 2px solid var(--accent); display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <span class="apm-badge" style="color: var(--accent); border-color: var(--accent);">COMMERCIAL VIP</span>
+                                    <h4 style="font-weight: 800; font-size: 1.1rem; margin-top: 10px; color: var(--accent);">Up to 5 Minutes Broadcast</h4>
+                                    <p style="font-size: 1.8rem; font-weight: 900; margin-top: 6px;">$24.99 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted);">/ mo (UGX 92,000 / KES 3,250)</span></p>
+                                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 8px;">Unlocks full 5-Minute commercial broadcasts + priority GPU rendering &amp; multi-platform export.</p>
+                                </div>
+                                <button type="button" onclick="document.getElementById('payer-phone').focus()" class="apm-btn-accent" style="margin-top: 16px; width: 100%;">Select VIP Plan</button>
+                            </div>
+                        </div>
+
+                        <div class="glass-card apm-field-group">
+                            <h4 style="font-weight: 800; font-size: 0.9rem; color: var(--primary); text-transform: uppercase;">Official Mobile Money &amp; International Gateways (Payoneer / Wise Supported)</h4>
+                            <div class="apm-two-col">
+                                <div class="apm-subbox">
+                                    <strong style="color: var(--accent);">🇺🇬 AIRTEL MONEY UGANDA &amp; TELEGRAM:</strong>
+                                    <span>Number: <strong>+256 750 438877</strong> | Registered Name: <strong>KAYITA Gari</strong></span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">Alt Uganda Line: +256 773 485270</span>
+                                </div>
+                                <div class="apm-subbox">
+                                    <strong style="color: var(--primary);">🇰🇪 SAFARICOM M-PESA KENYA &amp; WHATSAPP:</strong>
+                                    <span>Number: <strong>+254 182477559</strong> | Registered Name: <strong>DEBRALYN KAWIRA</strong></span>
+                                </div>
+                            </div>
+                            <div class="apm-three-col" style="padding-top: 8px;">
+                                <input id="payer-phone" type="text" placeholder="Your Phone Number..." class="apm-input" />
+                                <input id="payer-txid" type="text" placeholder="Transaction ID / Reference..." class="apm-input" />
+                                <button type="button" onclick="verifyAndUnlockPro()" class="btn-primary" style="justify-content: center;">
+                                    ✅ VERIFY &amp; UNLOCK PRO VIDEOS
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playground" class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Interactive AI Studio &amp; Assistant</h2>
+                <p style="color: var(--text-muted)">Ask our AI engine to write scripts, design campaigns, plan content, or generate Python code</p>
+            </div>
+
+            <div class="glass-card chat-container">
+                <div class="preset-sidebar">
+                    <div style="font-weight: 700; font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Quick Studio Prompts</div>
+                    <button class="preset-btn" onclick="usePreset('Write a 30-second viral TikTok & YouTube Shorts script for apmaihub.')">
+                        <i class="fa-solid fa-clapperboard" style="color: var(--primary)"></i> Viral Video Scriptwriter
+                    </button>
+                    <button class="preset-btn" onclick="usePreset('Create an AI-driven digital media strategy for East African creators.')">
+                        <i class="fa-solid fa-robot" style="color: #38bdf8"></i> AI Campaign Architect
+                    </button>
+                    <button class="preset-btn" onclick="usePreset('Create a social media automation & monetization strategy for creators.')">
+                        <i class="fa-solid fa-chart-line" style="color: var(--accent)"></i> Digital Marketing Plan
+                    </button>
+                    <button class="preset-btn" onclick="usePreset('Configure multi-camera OBS Studio live streaming settings for YouTube and Facebook.')">
+                        <i class="fa-solid fa-tower-broadcast" style="color: #ffaa00"></i> Live Broadcast Setup
+                    </button>
+                </div>
+
+                <div class="glass-card chat-main">
+                    <div class="chat-header">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block; box-shadow: 0 0 10px #10b981;"></span>
+                            <span style="font-weight: 800;">apmaihub AI Core v3.0</span>
+                        </div>
+                        <button style="background: none; border: none; color: var(--text-muted); cursor: pointer;" onclick="clearChat()" title="Clear Chat">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message ai">
+                            <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                            <div class="msg-bubble">
+                                Welcome to <strong>apmaihub</strong>! Select a prompt on the left or type any question below to generate video scripts or studio configurations.
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="chat-input-area" id="chat-form" onsubmit="handleChatSubmit(event)">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Ask for an AI video script, studio setup, or marketing plan..." required autocomplete="off">
+                        <button type="submit" class="btn-primary" style="padding: 12px 20px;">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="tools" class="section-container">
+            <div class="section-header">
+                <div class="pill-tag">
+                    <i class="fa-solid fa-film"></i>
+                    <span>Studio Production &amp; AI Solutions</span>
+                </div>
+                <h2 class="section-title">APM Mass Media <span class="gradient-text">Studio Services &amp; AI Suite</span></h2>
+                <p style="color: var(--text-muted)">From AI video production and social media automation to live broadcasting and creator mentorship.</p>
+            </div>
+
+            <div class="tools-grid" id="tools-catalog"></div>
+        </section>
+
+        <section id="about" class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">About Us &amp; Official Contacts</h2>
+                <p style="color: var(--text-muted)">Connect with apmaihub</p>
+            </div>
+
+            <div class="about-grid">
+                <div class="glass-card">
+                    <div class="apm-badge" style="margin-bottom: 10px;">STUDIO PRODUCTION &amp; AI POWERHOUSE</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 12px;" class="gradient-text">Akafo Pulaatifoomu Massmedia</h3>
+                    <p style="color: var(--text-muted); line-height: 1.65; font-size: 0.92rem;">
+                        Founded and led by <strong>CEO Steven Kayita Gari</strong>, <strong>apmaihub</strong> is a premier AI production powerhouse. We produce multi-language AI videos, manage multi-camera live broadcasts, automate social media workflows, and mentor creators across Kenya, Uganda, and worldwide.
+                    </p>
+
+                    <div class="contact-list">
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+                            <div>
+                                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Official Emails</div>
+                                <a href="mailto:stevengari640@gmail.com" class="contact-link" style="font-weight: 700; display: block;">stevengari640@gmail.com</a>
+                                <a href="mailto:apmmassmedia@gmail.com" class="contact-link" style="font-weight: 700; display: block;">apmmassmedia@gmail.com</a>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                            <div>
+                                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Direct Phone, WhatsApp &amp; Mobile Money</div>
+                                <a href="https://wa.me/256750438877" target="_blank" class="contact-link" style="font-weight: 700; display: block;">🇺🇬 +256 750 438877 (KAYITA Gari - Airtel Money &amp; WhatsApp)</a>
+                                <a href="https://wa.me/254182477559" target="_blank" class="contact-link" style="font-weight: 700; display: block;">🇰🇪 +254 182477559 (Debralyn Kawira - M-Pesa)</a>
+                                <span style="font-size: 0.82rem; color: var(--text-muted); display: block;">🇺🇬 +256 773 485270 | 🇬🇧 +44 7349 390687</span>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div>
+                                <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Physical Studio Locations</div>
+                                <div style="font-weight: 600; line-height: 1.5; font-size: 0.9rem;">
+                                    Umoja 1 &amp; Kayole Spine Road (BLK173 SOSIAN /12),<br>
+                                    Embakasi Central, Nairobi, Kenya &amp; Kampala, Uganda.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding: 12px;">
+                    <div class="map-container">
+                        <iframe 
+                            title="apmaihub Map Location"
+                            src="https://www.openstreetmap.org/export/embed.html?bbox=36.8800%2C-1.2950%2C36.9300%2C-1.2700&amp;layer=mapnik&amp;marker=-1.2800%2C36.9000"
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>&copy; 2026 apmaihub</strong> • CEO Steven Kayita Gari. All Rights Reserved.</p>
+        <p style="margin-top: 4px;">📧 stevengari640@gmail.com | apmmassmedia@gmail.com • 📞 +256 750 438877 | +254 182477559 • Nairobi, Kenya &amp; Kampala, Uganda</p>
+    </footer>
+
+    <div class="overlay" id="overlay" onclick="closeAllDrawers()"></div>
+
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h3 style="font-weight: 800;"><i class="fa-solid fa-bag-shopping" style="color: var(--primary);"></i> Selected Studio Services</h3>
+            <button class="icon-btn" onclick="closeAllDrawers()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="cart-body" id="cart-items"></div>
+
+        <div class="cart-footer">
+            <div class="whatsapp-config-box">
+                <label for="wa-number" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;"><i class="fa-brands fa-whatsapp"></i> Select Official WhatsApp Desk:</label>
+                <select id="wa-number" class="whatsapp-input">
+                    <option value="256750438877">🇺🇬 +256 750 438877 (CEO Steven Kayita)</option>
+                    <option value="254182477559">🇰🇪 +254 182477559 (Billing &amp; Support)</option>
+                </select>
+            </div>
+            <button class="btn-primary" style="width: 100%; justify-content: center; background: #25D366; color: #fff;" onclick="sendWhatsAppOrder()">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Send Order via WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <div class="auth-modal" id="auth-modal">
+        <div class="auth-header">
+            <h3 id="auth-modal-title" style="font-weight: 800;">CREATOR PORTAL</h3>
+            <button class="icon-btn" onclick="closeAllDrawers()" style="width: 36px; height: 36px;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Login</button>
+            <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Register</button>
+        </div>
+        
+        <form class="auth-form" id="login-form" onsubmit="handleLogin(event)">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Username or Email</label>
+            <input type="text" id="login-user" class="whatsapp-input" placeholder="stevengari640@gmail.com" required style="padding: 12px;">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Password</label>
+            <input type="password" id="login-pass" class="whatsapp-input" placeholder="Enter password" required style="padding: 12px;">
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;">Login to Studio</button>
+            <div class="auth-msg" id="login-msg"></div>
+        </form>
+
+        <form class="auth-form" id="register-form" onsubmit="handleRegister(event)" style="display: none;">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Full Name / Brand Name</label>
+            <input type="text" id="reg-name" class="whatsapp-input" placeholder="Enter your name" required style="padding: 12px;">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Email Address</label>
+            <input type="text" id="reg-user" class="whatsapp-input" placeholder="Enter email" required style="padding: 12px;">
+            <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Password</label>
+            <input type="password" id="reg-pass" class="whatsapp-input" placeholder="Create password" required style="padding: 12px;">
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;">Create Creator Account</button>
+            <div class="auth-msg" id="reg-msg"></div>
+        </form>
+    </div>
+
+    <script>
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+
+        let particles = [];
+        let stars = [];
+        const particleCount = 60;
+
+        function resizeCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        window.addEventListener('mousemove', (e) => {
+            createMouseStars(e.clientX, e.clientY);
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * bgCanvas.width;
+                this.y = Math.random() * bgCanvas.height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.radius = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > bgCanvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > bgCanvas.height) this.vy *= -1;
+            }
+            draw() {
+                bgCtx.beginPath();
+                bgCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                bgCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+                bgCtx.fill();
+            }
+        }
+
+        class Star {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 6 + 2;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2 - 0.5;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.02 + 0.015;
+                this.color = Math.random() > 0.5 ? '#00f2fe' : '#ff007f';
+                this.rotation = Math.random() * Math.PI;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+                this.rotation += 0.05;
+            }
+            draw() {
+                bgCtx.save();
+                bgCtx.translate(this.x, this.y);
+                bgCtx.rotate(this.rotation);
+                bgCtx.globalAlpha = Math.max(0, this.alpha);
+                bgCtx.fillStyle = this.color;
+                bgCtx.beginPath();
+                let rot = Math.PI / 2 * 3;
+                let step = Math.PI / 5;
+                bgCtx.moveTo(0, -this.size);
+                for (let i = 0; i < 5; i++) {
+                    bgCtx.lineTo(Math.cos(rot) * this.size, Math.sin(rot) * this.size);
+                    rot += step;
+                    bgCtx.lineTo(Math.cos(rot) * (this.size / 2), Math.sin(rot) * (this.size / 2));
+                    rot += step;
+                }
+                bgCtx.lineTo(0, -this.size);
+                bgCtx.closePath();
+                bgCtx.fill();
+                bgCtx.restore();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+        function createMouseStars(x, y) {
+            for (let i = 0; i < 2; i++) stars.push(new Star(x, y));
+        }
+
+        function animateCanvas() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 130) {
+                        bgCtx.beginPath();
+                        bgCtx.moveTo(particles[i].x, particles[i].y);
+                        bgCtx.lineTo(particles[j].x, particles[j].y);
+                        bgCtx.strokeStyle = primaryColor;
+                        bgCtx.globalAlpha = 1 - dist / 130;
+                        bgCtx.lineWidth = 0.5;
+                        bgCtx.stroke();
+                        bgCtx.globalAlpha = 1;
+                    }
+                }
+            }
+
+            for (let i = stars.length - 1; i >= 0; i--) {
+                stars[i].update();
+                stars[i].draw();
+                if (stars[i].alpha <= 0) stars.splice(i, 1);
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = themeBtn.querySelector('i');
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        });
+
+        const sections = document.querySelectorAll('main > section');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 130;
+                if (pageYOffset >= sectionTop) current = section.getAttribute('id');
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) link.classList.add('active');
+            });
+        });
+
+        function animateStats() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const target = parseFloat(stat.getAttribute('data-target'));
+                let current = 0;
+                const increment = target / 45;
+                const updateCount = () => {
+                    current += increment;
+                    if (current < target) {
+                        stat.innerText = target % 1 !== 0 ? current.toFixed(1) : Math.ceil(current).toLocaleString();
+                        setTimeout(updateCount, 30);
+                    } else {
+                        stat.innerText = target % 1 !== 0 ? target : target.toLocaleString();
+                    }
+                };
+                updateCount();
+            });
+        }
+        window.addEventListener('load', animateStats);
+
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+
+        function usePreset(text) {
+            chatInput.value = text;
+            chatInput.focus();
+        }
+
+        function clearChat() {
+            chatMessages.innerHTML = `
+                <div class="message ai">
+                    <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div class="msg-bubble">AI Console reset. Ready for your next script or technical instruction.</div>
+                </div>
+            `;
+        }
+
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+            appendMessage('user', text);
+            chatInput.value = '';
+
+            setTimeout(() => {
+                let reply = `<strong>apmaihub AI Core:</strong> Processed request for <em>"${text}"</em>. Ready to load directly into the Video Creation Studio above!`;
+                const low = text.toLowerCase();
+                if (low.includes("script") || low.includes("tiktok") || low.includes("video")) {
+                    reply = "<strong>Viral Broadcast Script Generated:</strong><br>1. <strong>Hook (0-5s):</strong> Welcome to apmaihub! Here is how digital creators are transforming East Africa.<br>2. <strong>Body (5-22s):</strong> Combine multi-language AI voiceovers with real human studio camera feeds.<br>3. <strong>CTA (22-30s):</strong> Contact CEO Steven Kayita Gari on +256 750 438877!";
+                } else if (low.includes("marketing") || low.includes("monetization")) {
+                    reply = "<strong>Digital Marketing &amp; Monetization Plan:</strong><br>• Publish daily 9:16 vertical reels in English, Swahili &amp; Luganda.<br>• Use APM Mass Media watermark branding.<br>• Connect Payoneer/Wise &amp; Mobile Money for creator payouts.";
+                } else if (low.includes("obs") || low.includes("stream")) {
+                    reply = "<strong>Multi-Camera Live Streaming Profile:</strong><br>• Encoder: NVIDIA NVENC H.264 (1080p 60fps, 6000 Kbps)<br>• Cameras: DJI Osmo Pocket 3 + Canon EOS M50 + DJI Wireless Mic<br>• Simultaneous RTMP output to YouTube &amp; Facebook Live.";
+                }
+                appendMessage('ai', reply);
+            }, 500);
+        }
+
+        function appendMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            const iconClass = sender === 'user' ? 'fa-solid fa-user' : 'fa-solid fa-robot';
+            msgDiv.innerHTML = `<div class="avatar"><i class="${iconClass}"></i></div><div class="msg-bubble">${text}</div>`;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        const products = [
+            { id: 1, name: "APM AI Video Studio (12+ Languages)", icon: "fa-clapperboard", desc: "Create 30s to 5-min videos in English, Swahili, Luganda, Runyankole, Acholi, French & more with real human video and visual filters.", canTryFree: true },
+            { id: 2, name: "Multi-Camera Live Streaming (OBS Studio)", icon: "fa-tower-broadcast", desc: "Professional multi-cam live broadcasting to YouTube, Facebook, and TikTok with custom lower-thirds and studio audio." },
+            { id: 3, name: "AI Social Media Automation Suite", icon: "fa-robot", desc: "Automated content scheduling, viral caption generation, and multi-platform publishing for creators and businesses." },
+            { id: 4, name: "Remote Work & Creator Monetization Mentorship", icon: "fa-user-graduate", desc: "Hands-on studio training on online monetization, international payout setup (Payoneer / Wise), and digital freelancing skills." }
+        ];
+
+        let cart = [];
+
+        function renderTools() {
+            const container = document.getElementById('tools-catalog');
+            container.innerHTML = products.map((product, idx) => `
+                <div class="glass-card tool-card">
+                    <div>
+                        <div class="tool-top-bar">
+                            <div class="tool-icon">
+                                <i class="fa-solid ${product.icon}"></i>
+                            </div>
+                            <span class="tool-num-badge">STUDIO 0${idx + 1}</span>
+                        </div>
+                        <h3 class="tool-title">${product.name}</h3>
+                        <p class="tool-desc">${product.desc}</p>
+                    </div>
+                    <div class="tool-footer">
+                        ${product.canTryFree ? `<button class="btn-primary" style="padding: 10px 14px; font-size: 0.8rem;" onclick="startFreeDemoVideo()"><i class="fa-solid fa-play"></i> Try Free</button>` : ''}
+                        <button class="btn-add-cart" onclick="addToCart(${product.id})">
+                            <i class="fa-brands fa-whatsapp"></i> Book Studio Service
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        renderTools();
+
+        function addToCart(productId) {
+            const existing = cart.find(item => item.id === productId);
+            if (existing) existing.qty++;
+            else {
+                const prod = products.find(p => p.id === productId);
+                cart.push({ ...prod, qty: 1 });
+            }
+            updateCartUI();
+            openCart();
+            const badge = document.getElementById('cart-count');
+            badge.classList.remove('bounce');
+            void badge.offsetWidth;
+            badge.classList.add('bounce');
+        }
+
+        function updateCartQty(productId, change) {
+            const item = cart.find(i => i.id === productId);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) cart = cart.filter(i => i.id !== productId);
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartCountBadge = document.getElementById('cart-count');
+            const totalItems = cart.reduce((sum, i) => sum + i.qty, 0);
+            cartCountBadge.innerText = totalItems;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 40px;">No studio services selected yet.</p>`;
+                return;
+            }
+            cartItemsContainer.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <span style="font-weight: 700; font-size: 0.9rem;">${item.name}</span>
+                    <div class="qty-controls">
+                        <button class="qty-btn" onclick="updateCartQty(${item.id}, -1)">-</button>
+                        <span style="font-weight: 700; font-size: 0.9rem;">${item.qty}</span>
+                        <button class="qty-btn" onclick="updateCartQty(${item.id}, 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        const cartDrawer = document.getElementById('cart-drawer');
+        const overlay = document.getElementById('overlay');
+        document.getElementById('cart-toggle').addEventListener('click', openCart);
+
+        function openCart() {
+            closeAllDrawers();
+            cartDrawer.classList.add('open');
+            overlay.classList.add('active');
+        }
+
+        function closeAllDrawers() {
+            cartDrawer.classList.remove('open');
+            authModal.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        function toggleWhatsAppConfig() {
+            openCart();
+            document.getElementById('wa-number').focus();
+        }
+
+        function sendWhatsAppOrder() {
+            if (cart.length === 0) return alert("Please select at least one studio service first.");
+            const phoneInput = document.getElementById('wa-number').value.replace(/[^0-9]/g, '');
+            let message = "Hello *apmaihub (CEO Steven Kayita Gari)*,\n\nI would like to book/order the following studio services:\n\n";
+            cart.forEach((item, index) => {
+                message += `${index + 1}. *${item.name}* (Qty: ${item.qty})\n`;
+            });
+            message += "\nPlease assist me with the next steps. Thank you!";
+            window.open(`https://wa.me/${phoneInput}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        const authModal = document.getElementById('auth-modal');
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const authNavText = document.getElementById('auth-nav-text');
+
+        let currentUser = JSON.parse(localStorage.getItem('akafo_logged_user') || 'null');
+        updateAuthNavUI();
+
+        function openAuthModal(tab = 'login') {
+            closeAllDrawers();
+            authModal.classList.add('active');
+            overlay.classList.add('active');
+            switchAuthTab(tab);
+        }
+
+        function switchAuthTab(tab) {
+            if (tab === 'login') {
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                loginForm.style.display = 'flex';
+                registerForm.style.display = 'none';
+            } else {
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+                registerForm.style.display = 'flex';
+                loginForm.style.display = 'none';
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const user = document.getElementById('reg-user').value.trim().toLowerCase();
+            const pass = document.getElementById('reg-pass').value;
+            const msg = document.getElementById('reg-msg');
+            let users = JSON.parse(localStorage.getItem('akafo_users') || '[]');
+            if (users.some(u => u.user === user)) {
+                msg.className = 'auth-msg err';
+                msg.innerText = 'Account already registered!';
+                return;
+            }
+            users.push({ name, user, pass });
+            localStorage.setItem('akafo_users', JSON.stringify(users));
+            msg.className = 'auth-msg succ';
+            msg.innerText = 'Registration successful! Switching to login...';
+            setTimeout(() => switchAuthTab('login'), 1000);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value.trim().toLowerCase();
+            const pass = document.getElementById('login-pass').value;
+            const msg = document.getElementById('login-msg');
+            let users = JSON.parse(localStorage.getItem('akafo_users') || '[]');
+            const found = users.find(u => u.user === user && u.pass === pass);
+            if (found) {
+                currentUser = found;
+                localStorage.setItem('akafo_logged_user', JSON.stringify(currentUser));
+                msg.className = 'auth-msg succ';
+                msg.innerText = `Welcome back, ${currentUser.name}!`;
+                updateAuthNavUI();
+                setTimeout(() => closeAllDrawers(), 800);
+            } else {
+                msg.className = 'auth-msg err';
+                msg.innerText = 'Invalid credentials.';
+            }
+        }
+
+        function updateAuthNavUI() {
+            if (currentUser) {
+                authNavText.innerText = currentUser.name.split(' ')[0];
+                document.getElementById('auth-nav-btn').onclick = () => {
+                    if (confirm(`Logged in as ${currentUser.name}. Log out?`)) {
+                        currentUser = null;
+                        localStorage.removeItem('akafo_logged_user');
+                        updateAuthNavUI();
+                    }
+                };
+            } else {
+                authNavText.innerText = 'Login';
+                document.getElementById('auth-nav-btn').onclick = () => openAuthModal('login');
+            }
+        }
+
+        let isProUnlocked = false;
+        const studioCanvas = document.getElementById('compositor-canvas');
+        const studioCtx = studioCanvas.getContext('2d');
+        const humanVideoEl = document.getElementById('human-video-el');
+        const customVoiceEl = document.getElementById('custom-voice-el');
+        let hasCustomVoiceLoaded = false;
+        let hasRealHumanVideoLoaded = false;
+        let isSpeaking = false;
+        let currentSubtitle = "Click 'GENERATE & PLAY BROADCAST' or 'Try Free 30s Video Now'!";
+        let currentSceneLabel = "SCENE 1: APM STUDIO READY";
+        let targetDurationSeconds = 30;
+        let elapsedSeconds = 0;
+        let timerInterval = null;
+        let tick = 0;
+        let activeVideoFilter = 'none';
+        let showNewsTicker = true;
+        let customBgImg = null;
+
+        let logoImg = new Image();
+        logoImg.crossOrigin = "anonymous";
+        logoImg.src = 'https://i.ibb.co/dwQhC04k/image.png';
+
+        function jumpToUpgrade() {
+            document.getElementById('studio').scrollIntoView({ behavior: 'smooth' });
+            switchTab('wallet');
+        }
+
+        function startFreeDemoVideo() {
+            document.getElementById('studio').scrollIntoView({ behavior: 'smooth' });
+            switchTab('studio');
+            document.getElementById('duration-input').value = "30";
+            targetDurationSeconds = 30;
+            runFullProductionPipeline();
+        }
+
+        function applyVideoFilterPreset(filterVal) {
+            activeVideoFilter = filterVal;
+        }
+
+        function quickFilter(filterVal, btnEl) {
+            activeVideoFilter = filterVal;
+            document.getElementById('video-filter-select').value = filterVal;
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+        }
+
+        function loadCustomBgImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                customBgImg = new Image();
+                customBgImg.src = e.target.result;
+                logPipeline("[STUDIO_BG] Loaded custom background image: " + file.name);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function toggleTicker() {
+            showNewsTicker = !showNewsTicker;
+            document.getElementById('ticker-btn-label').innerText = showNewsTicker ? "News Ticker: ON" : "News Ticker: OFF";
+        }
+
+        function loadLocalHumanMP4(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            humanVideoEl.srcObject = null;
+            humanVideoEl.src = URL.createObjectURL(file);
+            humanVideoEl.play().then(() => {
+                hasRealHumanVideoLoaded = true;
+                logPipeline("[MEDIA_FETCH] Loaded local human MP4 video (" + file.name + ") into compositor.");
+            });
+        }
+
+        async function activateLiveCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+                humanVideoEl.src = "";
+                humanVideoEl.srcObject = stream;
+                await humanVideoEl.play();
+                hasRealHumanVideoLoaded = true;
+                logPipeline("[MEDIA_FETCH] Live Human Studio Camera connected to compositor.");
+            } catch (e) {
+                alert("Camera permission denied or unavailable. Click '1. Load Human MP4' to pick a video file from your computer!");
+            }
+        }
+
+        function loadCustomVoiceAudio(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            customVoiceEl.src = URL.createObjectURL(file);
+            hasCustomVoiceLoaded = true;
+            logPipeline("[VOICE_GENERATION] Loaded custom recorded human voice audio: " + file.name);
+            alert("Custom human voice audio loaded! Click 'GENERATE & PLAY BROADCAST' to play.");
+        }
+
+        async function fetchPexelsHumanVideo() {
+            const key = document.getElementById('pexels-key').value.trim();
+            const topic = document.getElementById('topic-input').value.trim() || "presenter speaking";
+            if (!key) {
+                alert("Paste a free Pexels API Key from pexels.com/api, OR click '1. Load Human MP4' / '2. Live Human Cam'!");
+                return;
+            }
+            try {
+                logPipeline("[MEDIA_FETCH] Searching Pexels HD human footage for: " + topic);
+                const res = await fetch(`https://api.pexels.com/videos/search?query=${encodeURIComponent(topic + ' person')}&per_page=1`, {
+                    headers: { Authorization: key }
+                });
+                const data = await res.json();
+                if (data.videos && data.videos.length > 0) {
+                    humanVideoEl.srcObject = null;
+                    humanVideoEl.src = data.videos[0].video_files[0].link;
+                    await humanVideoEl.play();
+                    hasRealHumanVideoLoaded = true;
+                    logPipeline("[MEDIA_FETCH] Pexels HD Human Video streaming live!");
+                }
+            } catch (e) {
+                alert("Could not load Pexels video. Use '1. Load Human MP4' or '2. Live Human Cam'.");
+            }
+        }
+
+        function renderCompositor() {
+            tick++;
+            const w = studioCanvas.width;
+            const h = studioCanvas.height;
+            const bgTheme = document.getElementById('bg-theme-select') ? document.getElementById('bg-theme-select').value : 'cyber';
+
+            studioCtx.save();
+            studioCtx.filter = activeVideoFilter;
+
+            if (hasRealHumanVideoLoaded && humanVideoEl.readyState >= 2) {
+                studioCtx.drawImage(humanVideoEl, 0, 0, w, h);
+            } else if (customBgImg && customBgImg.complete && customBgImg.naturalWidth > 0) {
+                studioCtx.drawImage(customBgImg, 0, 0, w, h);
+            } else {
+                const grad = studioCtx.createLinearGradient(0, 0, w, h);
+                if (bgTheme === 'news') {
+                    grad.addColorStop(0, '#1a0505');
+                    grad.addColorStop(0.5, '#450a0a');
+                    grad.addColorStop(1, '#7f1d1d');
+                } else if (bgTheme === 'corporate') {
+                    grad.addColorStop(0, '#040d21');
+                    grad.addColorStop(0.5, '#0d3b8c');
+                    grad.addColorStop(1, '#1e3a8a');
+                } else if (bgTheme === 'gold') {
+                    grad.addColorStop(0, '#1c1204');
+                    grad.addColorStop(0.5, '#422006');
+                    grad.addColorStop(1, '#713f12');
+                } else if (bgTheme === 'emerald') {
+                    grad.addColorStop(0, '#021710');
+                    grad.addColorStop(0.5, '#064e3b');
+                    grad.addColorStop(1, '#047857');
+                } else {
+                    grad.addColorStop(0, '#070913');
+                    grad.addColorStop(0.5, '#0f172a');
+                    grad.addColorStop(1, '#1e1b4b');
+                }
+                studioCtx.fillStyle = grad;
+                studioCtx.fillRect(0, 0, w, h);
+
+                studioCtx.fillStyle = isSpeaking ? '#00f2fe' : 'rgba(0, 242, 254, 0.35)';
+                for (let i = 0; i < 32; i++) {
+                    const barH = isSpeaking ? Math.abs(Math.sin((tick + i * 5) * 0.24)) * 95 + 12 : 10;
+                    studioCtx.fillRect(120 + i * 13, (h / 2) - (barH / 2) - 22, 8, barH);
+                }
+                studioCtx.fillStyle = '#e2e8f0';
+                studioCtx.font = 'bold 12px Plus Jakarta Sans, sans-serif';
+                studioCtx.textAlign = 'center';
+                studioCtx.fillText("apmaihub • Click '1. Load Human MP4' or '2. Live Human Cam'", w / 2, (h / 2) + 52);
+                studioCtx.textAlign = 'left';
+            }
+            studioCtx.restore();
+
+            studioCtx.save();
+            studioCtx.beginPath();
+            studioCtx.arc(w - 38, 38, 26, 0, Math.PI * 2);
+            studioCtx.closePath();
+            studioCtx.clip();
+            if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
+                studioCtx.drawImage(logoImg, w - 64, 12, 52, 52);
+            } else {
+                studioCtx.fillStyle = '#070913';
+                studioCtx.fillRect(w - 64, 12, 52, 52);
+                studioCtx.fillStyle = '#00f2fe';
+                studioCtx.font = '900 13px Arial Black';
+                studioCtx.textAlign = 'center';
+                studioCtx.fillText('APM', w - 38, 42);
+            }
+            studioCtx.restore();
+            studioCtx.beginPath();
+            studioCtx.arc(w - 38, 38, 26, 0, Math.PI * 2);
+            studioCtx.lineWidth = 2.5;
+            studioCtx.strokeStyle = '#00f2fe';
+            studioCtx.stroke();
+
+            studioCtx.fillStyle = 'rgba(7, 9, 19, 0.88)';
+            studioCtx.fillRect(14, 14, 250, 24);
+            studioCtx.strokeStyle = '#00f2fe';
+            studioCtx.strokeRect(14, 14, 250, 24);
+            studioCtx.fillStyle = '#00f2fe';
+            studioCtx.font = 'bold 10px JetBrains Mono, monospace';
+            studioCtx.fillText(currentSceneLabel, 22, 30);
+
+            const style = document.getElementById('style-input').value.toUpperCase();
+            studioCtx.fillStyle = 'rgba(255, 0, 127, 0.92)';
+            studioCtx.fillRect(16, h - 108, 295, 22);
+            studioCtx.fillStyle = '#ffffff';
+            studioCtx.font = 'bold 10px Plus Jakarta Sans, sans-serif';
+            studioCtx.fillText(`apmaihub • ${style} • CEO STEVEN GARI`, 22, h - 93);
+
+            studioCtx.fillStyle = 'rgba(7, 9, 19, 0.9)';
+            studioCtx.fillRect(16, h - 86, w - 32, 50);
+            studioCtx.strokeStyle = '#00f2fe';
+            studioCtx.lineWidth = 1.5;
+            studioCtx.strokeRect(16, h - 86, w - 32, 50);
+
+            studioCtx.fillStyle = '#00f2fe';
+            studioCtx.font = 'bold 12px Plus Jakarta Sans, sans-serif';
+            studioCtx.textAlign = 'center';
+            const words = currentSubtitle.split(' ');
+            let l1 = '', l2 = '';
+            words.forEach((wd, i) => { if (i < 8) l1 += wd + ' '; else l2 += wd + ' '; });
+            studioCtx.fillText(l1.trim(), w / 2, h - 64);
+            if (l2) studioCtx.fillText(l2.trim(), w / 2, h - 45);
+            studioCtx.textAlign = 'left';
+
+            if (showNewsTicker) {
+                studioCtx.fillStyle = '#070913';
+                studioCtx.fillRect(0, h - 26, w, 26);
+                studioCtx.fillStyle = '#ff007f';
+                studioCtx.fillRect(0, h - 26, 95, 26);
+                studioCtx.fillStyle = '#ffffff';
+                studioCtx.font = 'bold 10px Plus Jakarta Sans, sans-serif';
+                studioCtx.fillText('APM LIVE', 12, h - 9);
+
+                const tickerText = "apmaihub • CEO STEVEN KAYITA GARI • AI VIDEO STUDIO & AI SOLUTIONS • +256 750 438877";
+                const scrollX = w - ((tick * 1.8) % (w + 960));
+                studioCtx.fillStyle = '#f8fafc';
+                studioCtx.fillText(tickerText, Math.max(102, scrollX), h - 9);
+            }
+
+            requestAnimationFrame(renderCompositor);
+        }
+        renderCompositor();
+
+        function filterVoicesByLanguage() {
+            const langFilter = document.getElementById('language-select').value;
+            const select = document.getElementById('voice-select');
+            const allVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+            if (!allVoices.length) return;
+            select.innerHTML = '';
+
+            const langMap = {
+                en: ['en'], sw: ['sw', 'ke', 'tz', 'en'], lg: ['lg', 'sw', 'ke', 'ug', 'en'],
+                nyn: ['nyn', 'sw', 'ke', 'en'], ach: ['ach', 'luo', 'sw', 'ke', 'en'],
+                rw: ['rw', 'sw', 'fr', 'en'], ln: ['ln', 'fr', 'sw', 'en'],
+                fr: ['fr'], ar: ['ar'], es: ['es'], zh: ['zh', 'cmn'], hi: ['hi']
+            };
+
+            let filtered = allVoices.filter(v => {
+                if (langFilter === 'all') return true;
+                const l = v.lang.toLowerCase();
+                const targets = langMap[langFilter] || ['en'];
+                return targets.some(code => l.includes(code));
+            });
+            if (!filtered.length) filtered = allVoices;
+
+            filtered.sort((a, b) => {
+                const score = v => {
+                    let s = 0;
+                    if (v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Google')) s += 25;
+                    if (v.lang.toLowerCase().startsWith(langFilter)) s += 30;
+                    if (v.lang.includes('KE') || v.lang.includes('TZ') || v.lang.includes('NG')) s += 15;
+                    return s;
+                };
+                return score(b) - score(a);
+            });
+
+            filtered.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = allVoices.indexOf(v);
+                const isNat = v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Google');
+                opt.textContent = `${isNat ? '⭐ [HUMAN NEURAL] ' : ''}${v.name} (${v.lang})`;
+                select.appendChild(opt);
+            });
+        }
+        if (window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = filterVoicesByLanguage;
+            setTimeout(filterVoicesByLanguage, 500);
+        }
+
+        function changeAspectRatio() {
+            const plat = document.getElementById('platform-input').value;
+            const wrap = document.getElementById('monitor-wrapper');
+            if (plat === 'Facebook') wrap.style.width = '100%';
+            else wrap.style.width = '260px';
+        }
+
+        function checkDurationPermission() {
+            const selected = parseInt(document.getElementById('duration-input').value, 10);
+            if (selected > 30 && !isProUnlocked) {
+                alert('🔒 Extended commercial videos require a Pro Subscription!\n\nRedirecting to Subscriptions & Mobile Money (Airtel Uganda: +256 750 438877 KAYITA Gari | M-Pesa: +254 182477559 DEBRALYN KAWIRA).');
+                document.getElementById('duration-input').value = "30";
+                targetDurationSeconds = 30;
+                switchTab('wallet');
+            } else {
+                targetDurationSeconds = selected;
+                updateTimerText(0, targetDurationSeconds);
+            }
+        }
+
+        function updateTimerText(elapsed, total) {
+            const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${fmt(elapsed)} / ${fmt(total)}`;
+        }
+
+        function logPipeline(msg) {
+            const box = document.getElementById('pipeline-log-box');
+            const time = new Date().toLocaleTimeString();
+            box.innerHTML += `<div>[${time}] ${msg}</div>`;
+            box.scrollTop = box.scrollHeight;
+            document.getElementById('pipeline-step-text').innerText = msg;
+        }
+
+        function buildMultiLanguageScenes(lang, topic, style, platform) {
+            const templates = {
+                en: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `Welcome to apmaihub, led by C E O Steven Kayita Gari! Today we examine ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `In this ${style} broadcast built for ${platform}, discover the key facts and strategies behind ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `We provide custom AI video production and digital media solutions.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `Follow apmaihub today and upgrade your plan to unlock extended commercial broadcasts!` }
+                ],
+                sw: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `Karibu apmaihub chini ya Mkurugenzi Mkuu Steven Kayita Gari! Leo tunaangazia ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `Katika kipindi hiki cha ${style} kwenye ${platform}, jifunze ukweli na mbinu muhimu kuhusu ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `Tunatoa huduma za matangazo ya biashara na video za AI.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `Wasiliana na apmaihub leo ili kufungua video za kibiashara!` }
+                ],
+                lg: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `Tusanyuse okubalabako ku apmaihub wansi wa C E O Steven Kayita Gari! Olwaleero tulaba ku ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `Mu pulogulaamu eno ku ${platform}, tugenda kulaba ebyafaayo n'obukodyo obukwata ku ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `Tukola vidiyo za A I ne pulogulaamu z'okukulaakulanya ebitone.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `Tuukirira ku WhatsApp oba Airtel Money otandike okukola vidiyo z'ebitundu!` }
+                ],
+                nyn: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `Tushemererewe okubareeba aha apmaihub ahansi ya C E O Steven Kayita Gari! Erioba nitugamba aha ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `Omu kicweka eki aha ${platform}, nitwega ebikuru ebikwatiraine na ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `Apmaihub neekuyamba okukora vidiyo ez'omutindo gw'ahaiguru.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `Twandikire aha WhatsApp nari Airtel Money okwiguraho vidiyo!` }
+                ],
+                ach: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `Wajoli i apmaihub kacel ki C E O Steven Kayita Gari! Tin waloko kom ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `I yub man me ${style} i kom ${platform}, waniang maber lok kom ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `Apmaihub yubo vidiyo me nongo cente i intanet.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `Kub kwedwa i WhatsApp onyo Telegram wek iyab vidiyo!` }
+                ],
+                rw: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `Murakaza neza kuri apmaihub iyobowe na C E O Steven Kayita Gari! Uyu munsi turavuga kuri ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `Muri iki kiganiro cya ${style} kuri ${platform}, menya byinshi ku bijyanye na ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `Tugufasha kwamamaza binyuze mu mashusho agezweho ya AI.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `Twandikire kuri WhatsApp cyangwa Telegram ufungure amashusho y'igihe kirekire!` }
+                ],
+                ln: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `Boyei bolamu na apmaihub na C E O Steven Kayita Gari! Lelo tokolobela ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `Na emisyo oyo ya ${style} na ${platform}, boyekola makambo ya ntina na tina ya ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `Apmaihub esalisaka bato na ba video ya kitoko ya AI.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `Benga biso na WhatsApp to Telegram mpo na kosala ba video ya monene!` }
+                ],
+                fr: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `Bienvenue sur apmaihub, dirigé par le P D G Steven Kayita Gari ! Aujourd'hui nous présentons ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `Dans cette émission ${style} optimisée pour ${platform}, découvrez tout sur ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `Nous produisons des vidéos humaines professionnelles en intelligence artificielle.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `Rejoignez apmaihub dès aujourd'hui pour débloquer des vidéos publicitaires !` }
+                ],
+                ar: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `مرحباً بكم في apmaihub بقيادة الرئيس التنفيذي ستيفن كاييتا غاري! اليوم نتحدث عن ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `في هذا البث عبر ${platform}، تعرف على أهم المعلومات حول ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `نقوم بإنتاج الفيديو الاحترافي باستخدام الذكاء الاصطناعي.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `تواصل مع apmaihub اليوم لفتح مقاطع الفيديو التجارية المتقدمة!` }
+                ],
+                es: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `¡Bienvenidos a apmaihub, dirigido por el C E O Steven Kayita Gari! Hoy analizamos ${topic}.` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `En esta transmisión para ${platform}, descubre las claves principales sobre ${topic}.` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `Producimos videos comerciales con IA en alta definición.` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `¡Sigue a apmaihub hoy y desbloquea videos comerciales avanzados!` }
+                ],
+                zh: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `欢迎来到由首席执行官 Steven Kayita Gari 领导的 apmaihub！今天我们为您解析 ${topic}。` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `在本期专为 ${platform} 打造的节目中，深入了解 ${topic} 的核心内容。` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `我们提供智能 AI 真人高清视频制作服务。` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `立即联系 apmaihub，解锁商业长视频功能！` }
+                ],
+                hi: [
+                    { scene_number: 1, duration_seconds: 7, transition: "cut", voiceover: `सीईओ स्टीवन कायिता गारी के नेतृत्व वाले apmaihub में आपका स्वागत है! आज हम ${topic} के बारे में बात कर रहे हैं।` },
+                    { scene_number: 2, duration_seconds: 8, transition: "fade", voiceover: `${platform} के लिए बनाए गए इस प्रसारण में ${topic} की पूरी जानकारी प्राप्त करें।` },
+                    { scene_number: 3, duration_seconds: 8, transition: "zoom", voiceover: `हम एआई तकनीक द्वारा असली ह्यूमन वीडियो तैयार करते हैं।` },
+                    { scene_number: 4, duration_seconds: 7, transition: "cut", voiceover: `व्याड वीडियो अनलॉक करने के लिए आज ही apmaihub से जुड़ें!` }
+                ]
+            };
+            return templates[lang] || templates['en'];
+        }
+
+        function runFullProductionPipeline() {
+            checkDurationPermission();
+            const topic = document.getElementById('topic-input').value.trim() || "Content Creation";
+            const style = document.getElementById('style-input').value;
+            const platform = document.getElementById('platform-input').value;
+            const lang = document.getElementById('language-select').value;
+            const durationSec = parseInt(document.getElementById('duration-input').value, 10);
+
+            logPipeline(`[FASTAPI] POST /api/v1/content/generate (lang="${lang}", topic="${topic}", duration=${durationSec}s)`);
+
+            const scenes = buildMultiLanguageScenes(lang, topic, style, platform);
+
+            const payloadJSON = {
+                project_id: "apm-uuid-" + Math.floor(Math.random() * 99999),
+                ceo_publisher: "STEVEN KAYITA GARI - apmaihub",
+                language: lang,
+                platform_profile: platform,
+                duration_seconds: durationSec,
+                visual_filter: activeVideoFilter,
+                scenes: scenes
+            };
+            document.getElementById('asset-storyboard').innerText = JSON.stringify(payloadJSON, null, 2);
+            document.getElementById('asset-titles').innerHTML = `1. The Complete ${style} Guide to ${topic}<br>2. CEO Steven Kayita Gari Breaks Down ${topic}<br>3. How ${topic} Impacts Campaigns on ${platform}`;
+            document.getElementById('asset-ideas').innerHTML = `<strong>Hashtags: #apmaihub #StevenKayitaGari #${platform.replace(/\s+/g,'')} #AI #Uganda #Kenya<br><strong>Short-Form Concept:</strong> Real human presenter with visual filters &amp; dynamic captions.`;
+
+            logPipeline(`[CELERY] Job queued: STORYBOARD_GENERATION & VOICE_GENERATION (${scenes.length} scenes in '${lang}')`);
+
+            if (timerInterval) clearInterval(timerInterval);
+            elapsedSeconds = 0;
+            updateTimerText(0, durationSec);
+            timerInterval = setInterval(() => {
+                if (isSpeaking && elapsedSeconds < durationSec) {
+                    elapsedSeconds++;
+                    updateTimerText(elapsedSeconds, durationSec);
+                }
+            }, 1000);
+
+            if (hasCustomVoiceLoaded) {
+                customVoiceEl.currentTime = 0;
+                customVoiceEl.play();
+            }
+
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                let idx = 0;
+                function speakScene() {
+                    if (idx >= scenes.length) {
+                        isSpeaking = false;
+                        clearInterval(timerInterval);
+                        currentSceneLabel = "FFMPEG RENDER COMPLETE ✓";
+                        logPipeline(`[FFMPEG] Final MP4 encoded with APM watermark.`);
+                        return;
+                    }
+                    const utter = new SpeechSynthesisUtterance(scenes[idx].voiceover);
+                    const voices = window.speechSynthesis.getVoices();
+                    const vIdx = document.getElementById('voice-select').value;
+                    if (voices[vIdx]) utter.voice = voices[vIdx];
+                    utter.rate = 0.98;
+
+                    utter.onstart = () => {
+                        isSpeaking = true;
+                        currentSceneLabel = `SCENE ${scenes[idx].scene_number} [${scenes[idx].transition.toUpperCase()}]`;
+                        currentSubtitle = scenes[idx].voiceover;
+                    };
+                    utter.onend = () => { idx++; speakScene(); };
+                    window.speechSynthesis.speak(utter);
+                }
+                speakScene();
+            }
+        }
+
+        function stopBroadcast() {
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            if (hasCustomVoiceLoaded) customVoiceEl.pause();
+            if (timerInterval) clearInterval(timerInterval);
+            isSpeaking = false;
+        }
+
+        function exportRenderedVideo() {
+            const btn = document.getElementById('export-mp4-btn');
+            btn.innerText = "⏳ Recording & Encoding...";
+            const stream = studioCanvas.captureStream(30);
+            const rec = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            const chunks = [];
+            rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            rec.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `apmaihub-${targetDurationSeconds}s-Video.webm`;
+                a.click();
+                btn.innerHTML = '<i class="fa-solid fa-check"></i><span>Video Downloaded!</span>';
+            };
+            runFullProductionPipeline();
+            rec.start();
+            setTimeout(() => rec.stop(), 8000);
+        }
+
+        function verifyAndUnlockPro() {
+            const phone = document.getElementById('payer-phone').value.trim();
+            const txid = document.getElementById('payer-txid').value.trim();
+            if (!phone || !txid) return alert("Enter your Phone Number and Transaction ID.");
+            isProUnlocked = true;
+            document.getElementById('plan-badge-side').innerText = "PRO UNLOCKED (1m-5m)";
+            document.getElementById('account-tier-header').innerText = "✅ PRO ACTIVE: Extended Videos";
+            const d = document.getElementById('duration-input');
+            d.options[1].text = "60 Seconds / 1 Minute (PRO Unlocked ✓)";
+            d.options[2].text = "2 Minutes (PRO Unlocked ✓)";
+            d.options[3].text = "3 Minutes (PRO Unlocked ✓)";
+            d.options[4].text = "5 Minutes (VIP Unlocked ✓)";
+            d.value = "180";
+            alert("🎉 Pro Plan Unlocked! You can now generate extended commercial broadcasts.");
+            switchTab('studio');
+        }
+
+        function loadUserLogo(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('app-logo-img').src = e.target.result;
+                document.getElementById('navbar-logo-img').src = e.target.result;
+                document.getElementById('app-logo-img').style.display = 'block';
+                document.getElementById('fallback-svg-logo').style.display = 'none';
+                logoImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function switchTab(t) {
+            ['studio', 'assets', 'pipeline', 'backend', 'wallet'].forEach(id => {
+                document.getElementById('tab-' + id).classList.add('apm-hidden');
+                document.getElementById('nav-' + id).classList.remove('active-nav');
+            });
+            document.getElementById('tab-' + t).classList.remove('apm-hidden');
+            document.getElementById('nav-' + t).classList.add('active-nav');
+        }
+
+        function copyAllAssets() {
+            navigator.clipboard.writeText(document.getElementById('full-assets-content').innerText);
+            alert("Copied all 7 AI Content Assets & JSON Storyboard!");
+        }
+
+        const BACKEND_SERVER_BUNDLE = `# ============================================================================
+# apmaihub - BACKEND SERVER BUNDLE
+# CEO STEVEN KAYITA GARI | stevengari640@gmail.com | apmmassmedia@gmail.com
+# Architecture: FastAPI + PostgreSQL + Redis + Celery + Local LLM/TTS + Whisper + FFmpeg
+# ============================================================================
+
+# --- 1. docker-compose.yml ---
+"""
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: apm_admin
+      POSTGRES_PASSWORD: apm_secure_password
+      POSTGRES_DB: apm_video_studio
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  backend:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+  worker:
+    build: .
+    command: celery -A app.workers.celery_app worker --loglevel=info
+"""
+
+# --- 2. app/main.py (FastAPI + All Languages + Subscription Gate) ---
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+import subprocess, uuid
+
+app = FastAPI(title="apmaihub AI Video Studio API", version="3.0.0")
+
+SUPPORTED_LANGUAGES = ["en", "sw", "lg", "nyn", "ach", "rw", "ln", "fr", "ar", "es", "zh", "hi"]
+
+class ContentRequest(BaseModel):
+    topic: str
+    style: str = "educational"
+    platform: str = "tiktok"
+    duration_seconds: int = Field(default=30, ge=30, le=300)
+    language: str = "en"
+    is_pro_subscriber: bool = False
+
+@app.post("/api/v1/content/generate")
+async def generate_content(req: ContentRequest):
+    if req.duration_seconds > 30 and not req.is_pro_subscriber:
+        raise HTTPException(status_code=402, detail="Upgrade via Airtel Money (+256750438877 KAYITA Gari) or M-Pesa (+254 182477559 Debralyn Kawira) to unlock pro videos.")
+    return {"project_id": str(uuid.uuid4()), "language": req.language, "duration": req.duration_seconds, "status": "QUEUED"}
+`;
+        document.getElementById('backend-code-display').innerText = BACKEND_SERVER_BUNDLE;
+
+        function downloadBackendBundle() {
+            const blob = new Blob([BACKEND_SERVER_BUNDLE], { type: 'text/x-python' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'apm_backend_server_bundle.py';
+            a.click();
+        }
+    </script>
+</body>
+</html>
